@@ -147,6 +147,7 @@ Features:
 - Edit supplier details
 - Remove suppliers
 
+![Inventory](public/assets/images/Suppliers.png)  
 ---
 ### 🔐 Route Protection
 
