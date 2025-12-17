@@ -82,7 +82,7 @@ Routes are protected using a global Nuxt auth middleware.
 - User authenticates to access the banking dashboard
 - Validation messaging for incorrect login attempts
 
-![login](public/assets/images/img/login.png)
+![login](public/assets/images/login.png)
 
 ---
 
