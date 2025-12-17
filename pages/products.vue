@@ -9,7 +9,6 @@
 
     <DataFetcher :uri="apiBaseUri">
         <template #default="{ data, create, edit, deleteItem, refresh }">
-
             <!-- Force table update when data changes -->
             <TableComponent
                 :key="JSON.stringify(data?.result)"
@@ -43,7 +42,6 @@
                                     v-for="(field, index) in entityFields"
                                     :key="index"
                                 >
-
                                     <!-- TEXT INPUTS -->
                                     <v-text-field
                                         v-if="field.key !== 'fkProductCategory'"
@@ -66,7 +64,6 @@
                                         required
                                         :readonly="isDetailsDialog"
                                     />
-
                                 </v-col>
                             </v-row>
                         </v-container>
@@ -84,10 +81,8 @@
                             Save
                         </v-btn>
                     </v-card-actions>
-
                 </v-card>
             </v-dialog>
-
         </template>
     </DataFetcher>
 
@@ -106,7 +101,6 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useFetch } from "#app";
 
 const pageTitle = "Products";
 const pageDescription = "Manage your products here.";
@@ -152,21 +146,25 @@ const fkOptions = ref({
 const snackbar = ref(false);
 const snackbarMessage = ref("");
 
-// Load category options
+// Load category options (with auth header)
 const fetchCategoryOptions = async () => {
     try {
-        const { data, error } = await useFetch(
-            "http://localhost:8080/api/ProductCategories"
+        const token = localStorage.getItem("token");
+
+        const response = await $fetch(
+            "http://localhost:8080/api/ProductCategories",
+            {
+                headers: token
+                    ? { Authorization: `Bearer ${token}` }
+                    : {}
+            }
         );
 
-        if (!error.value) {
-            const items = data.value?.result ?? [];
-
-            fkOptions.value.fkProductCategory = items.map(c => ({
-                id: c.id,
-                productCategoryName: c.productCategoryName
-            }));
-        }
+        const items = response?.result ?? [];
+        fkOptions.value.fkProductCategory = items.map(c => ({
+            id: c.id,
+            productCategoryName: c.productCategoryName
+        }));
     } catch (err) {
         console.error("Failed loading categories:", err);
     }

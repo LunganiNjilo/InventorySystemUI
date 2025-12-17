@@ -1,3 +1,17 @@
+<script setup>
+import { onMounted } from 'vue'
+import { navigateTo } from '#app'
+
+onMounted(() => {
+  const token = localStorage.getItem('token')
+
+  if (!token) {
+    navigateTo('/login')
+  }
+})
+</script>
+
+
 <template>
     <v-app>
         <NavBar />

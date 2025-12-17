@@ -37,9 +37,6 @@ const data = ref({
   isNext: false
 });
 
-/* =========================
-   HELPERS
-========================= */
 function normalizeResponse(response) {
   if (!response) {
     return {
@@ -54,7 +51,7 @@ function normalizeResponse(response) {
 
   const rawResult = Array.isArray(response)
     ? response
-    : response.result ?? response.data ?? response.items ?? [];
+    : response.result ?? response.data ?? [];
 
   return {
     result: [...rawResult],
@@ -66,14 +63,18 @@ function normalizeResponse(response) {
   };
 }
 
-/* =========================
-   FETCH (FIXED)
-========================= */
+function authHeaders() {
+  const token = localStorage.getItem("token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 async function fetchData() {
   if (!props.uri) return;
 
   try {
-    const fetched = await $fetch(props.uri);
+    const fetched = await $fetch(props.uri, {
+      headers: authHeaders()
+    });
     data.value = normalizeResponse(fetched);
   } catch (err) {
     console.error("[DataFetcher] fetch error:", err);
@@ -81,40 +82,29 @@ async function fetchData() {
   }
 }
 
-/* =========================
-   CREATE
-========================= */
 async function createItem(payload) {
   return await $fetch(props.uri, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),
     body: payload
   });
 }
 
-/* =========================
-   EDIT
-========================= */
 async function editItem(id, payload) {
   return await $fetch(`${props.uri}/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),
     body: payload
   });
 }
 
-/* =========================
-   DELETE
-========================= */
 async function deleteItem(id) {
   return await $fetch(`${props.uri}/${id}`, {
-    method: "DELETE"
+    method: "DELETE",
+    headers: authHeaders()
   });
 }
 
-/* =========================
-   LIFECYCLE
-========================= */
 onMounted(fetchData);
 watch(() => props.uri, fetchData);
 </script>
